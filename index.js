@@ -30,7 +30,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider(nodeList[Math.floor(Math.r
             const info = await strategy.methods.deleverageUntilNotOverLevered().call();
             console.log(`Contract ${cAddress} crate = ${info.rate / 10} new rate = ${info.newRate / 10} reward = ${info.rewardToUser}`);
 
-            if (true || info.newRate * 1 < info.rate * 1 || info.rewardToUser > 0) {
+            if (info.newRate * 1 < info.rate * 1 || info.rewardToUser > 0) {
                 console.log('Sending trx...');
                 // await (new Promise((x)=>setTimeout(x, 4000)));
 
