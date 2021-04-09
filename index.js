@@ -28,9 +28,10 @@ const web3 = new Web3(new Web3.providers.HttpProvider(nodeList[Math.floor(Math.r
         for (let cAddress of contracts) {
             const strategy = new web3.eth.Contract(abi, cAddress);
             const info = await strategy.methods.deleverageUntilNotOverLevered().call();
-            console.log(`Contract ${cAddress} crate = ${info.rate / 10} new rate = ${info.newRate / 10} reward = ${info.rewardToUser}`);
+            const borrowRateDanger = await strategy.methods.borrowRateDanger().call();
+            console.log(`Contract ${cAddress} crate = ${info.rate / 10} new rate = ${info.newRate / 10} reward = ${info.rewardToUser} borrowRateDanger=${borrowRateDanger/10}`);
 
-            if (info.newRate * 1 < info.rate * 1 || info.rewardToUser > 0) {
+            if ((info.rate *1 > borrowRateDanger *1 && info.newRate * 1 < info.rate * 1) || info.rewardToUser > 0) {
                 console.log('Sending trx...');
                 // await (new Promise((x)=>setTimeout(x, 4000)));
 
