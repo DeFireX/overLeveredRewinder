@@ -12,7 +12,7 @@ const nodeList = [
     'https://bsc-dataseed1.binance.org',
     'https://bsc-dataseed2.binance.org',
     'https://bsc-dataseed3.binance.org'
-]
+];
 
 
 (async () => {
