@@ -29,6 +29,16 @@ const nodeList = [
 
         const USER_ADDRESS = config.parsed.USER_ADDRESS;
         const USER_PK = config.parsed.USER_PK;
+        const WITH_PROFIT_ONLY = config.parsed.WITH_PROFIT_ONLY * 1;
+
+        console.log(`Script running in ${WITH_PROFIT_ONLY ? 'only *with profit* mode' : 'normal mode'}`);
+
+        if (!(/^0x[a-fA-F0-9]{40}$/.test(USER_ADDRESS))) {
+            throw new Error(`${USER_ADDRESS} has wrong format`);
+        }
+        if (!(/^[a-fA-F0-9]{64}$/.test(USER_PK))) {
+            throw new Error(`PK has wrong format`);
+        }
 
         for (let cAddress of contracts) {
             const strategy = new web3.eth.Contract(abi, cAddress);
@@ -36,7 +46,10 @@ const nodeList = [
             const borrowRateDanger = await strategy.methods.borrowRateDanger().call();
             console.log(`Contract ${cAddress} crate = ${info.rate / 10} new rate = ${info.newRate / 10} reward = ${info.rewardToUser} borrowRateDanger=${borrowRateDanger/10}`);
 
-            if ((info.rate *1 > borrowRateDanger * 1 && info.newRate * 1 < info.rate * 1) || info.rewardToUser > 0) {
+            const isNeedToSendTrx = (WITH_PROFIT_ONLY && info.rewardToUser > 0 && info.newRate * 1 < info.rate * 1 && info.rate *1 > borrowRateDanger * 1) ||
+                                    (!WITH_PROFIT_ONLY && ((info.rate *1 > borrowRateDanger * 1 && info.newRate * 1 < info.rate * 1) || info.rewardToUser > 0));
+
+            if (isNeedToSendTrx) {
                 console.log('Sending trx...');
                 // await (new Promise((x)=>setTimeout(x, 4000)));
 
